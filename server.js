@@ -8,6 +8,7 @@ mongoose.connect("mongodb://jake:jake@ds157325.mlab.com:57325/jaketripp-url-shor
 
 const app = express();
 app.use(express.static(__dirname + '/views'));
+app.use(express.static(__dirname + '/public'));
 
 app.use(bodyParser.json());
 

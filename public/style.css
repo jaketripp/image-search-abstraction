@@ -1,0 +1,13 @@
+.container {
+  margin: 20px auto;
+}
+
+.icons {
+  margin: 20px auto;
+  font-size: 2em;
+}
+
+.icons a, .icons a:hover, .icons a:visited {
+  color: black;
+  text-decoration: none;
+}
