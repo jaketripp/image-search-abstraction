@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+	<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<title>URL Shortener</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+	</head>
+
+	<body>
+
+	<div class="container" style="margin: 20px auto">
+		<img src="https://avatars0.githubusercontent.com/jaketripp?&s=300" alt="A picture of me (Jake Tripp)">
+		<h1>FreeCodeCamp API Project #3: URL Shortener Microservice</h1>
+
+		<blockquote>
+			<p>User stories:</p>
+			<ul>
+				<li>I can pass a URL as a parameter and I will receive a shortened URL in the JSON response.</li>
+				<li>When I visit that shortened URL, it will redirect me to my original link.</li>
+			</ul>
+		</blockquote>
+
+		<h3>Example creation usage:</h3>
+		<code>https://abounding-beret.glitch.me/new/https://www.google.com</code>
+		<br/>
+		<code>https://abounding-beret.glitch.me/new/http://foo.com:80</code>
+
+		<h3>Example creation output</h3>
+		<code>{
+		  "original_url":"http://foo.com:80",
+		  "short_url":"https://abounding-beret.glitch.me/8170"
+		}
+		</code>
+
+		<h3>Usage:</h3>
+		<code>https://abounding-beret.glitch.me/2871</code>
+		<h3>Will redirect to:</h3>
+		<code>https://www.google.com/</code>
+	</div>
+
+</body>
+</html>

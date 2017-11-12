@@ -7,6 +7,7 @@ mongoose.Promise = global.Promise;
 mongoose.connect("mongodb://jake:jake@ds157325.mlab.com:57325/jaketripp-url-shortener");
 
 const app = express();
+app.use(express.static(__dirname + '/views'));
 
 app.use(bodyParser.json());
 
@@ -24,18 +25,12 @@ var URL = mongoose.model('URL', {
 	}
 });
 
+app.get('/', (req, res) => {
+	res.render('index.html');
+})
+
 app.get('/:id', (req, res) => {
-	// if id is not a number
-		// {
-		//  error: "This is not a valid url."
-		// }
-	// find id in db
-	// if you can
-	// redirect to associated link
-	// if not
-		// {
-		//  error: "This url is not on the database."
-		// }
+
 	var id = req.params.id;
 	// not a number
 	if (isNaN(id)) {
@@ -45,21 +40,20 @@ app.get('/:id', (req, res) => {
 	}
 	id = Number(id);
 
-	URL.find({id}).then((url) => {
+	URL.find({ id }).then((url) => {
 		// couldn't find anything
 		if (url.length === 0) {
 			res.send({
 				error: "This url is not in the database."
 			});
-			return;
 		// success case
 		} else {
 			res.redirect(url[0].redirect);
-			return;
 		}
+
 	}).catch((e) => {
 		res.status(400).send();
-	});	
+	});
 });
 
 app.get('/new/:url*', (req, res) => {
@@ -72,20 +66,21 @@ app.get('/new/:url*', (req, res) => {
 		id: randomNum
 	});
 
-	site.save().then((doc) => {
-		if (validUrl.isUri(url)) {
+	if (validUrl.isUri(url)) {
+		site.save().then((doc) => {
 			res.send({
 				original_url: doc.redirect,
-				short_url: baseURL + '/' + doc.id
+				short_url: 'https://' + baseURL + '/' + doc.id
 			});
-		} else {
-			res.send({
-				error: "Wrong url format, make sure you have a valid protocol and real site."
-			});
-		}
-	}, (e) => {
-		res.status(400).send(e);
-	});
+		}, (e) => {
+			res.status(400).send(e);
+		});
+
+	} else {
+		res.send({
+			error: "Wrong url format, make sure you have a valid protocol and real site."
+		});
+	}
 
 });
 
@@ -94,3 +89,4 @@ const port = process.env.PORT || 3000;
 app.listen(3000, () => {
 	console.log(`Server is up on port ${port}`);
 });
+
