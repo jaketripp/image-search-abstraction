@@ -27,7 +27,7 @@ var URL = mongoose.model('URL', {
 
 app.get('/', (req, res) => {
 	res.render('index.html');
-})
+});
 
 app.get('/:id', (req, res) => {
 
@@ -70,7 +70,7 @@ app.get('/new/:url*', (req, res) => {
 		site.save().then((doc) => {
 			res.send({
 				original_url: doc.redirect,
-				short_url: 'https://' + baseURL + '/' + doc.id
+				short_url: 'http://' + baseURL + '/' + doc.id
 			});
 		}, (e) => {
 			res.status(400).send(e);
