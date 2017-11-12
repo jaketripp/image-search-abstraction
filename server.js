@@ -1,24 +1,51 @@
 const express = require('express');
-var app = express();
+const validUrl = require('valid-url');
 
-app.get('/', (req, res) => {
-	var lang = req.headers["accept-language"].split(',')[0];
-	var ip = req.headers['x-forwarded-for'] || 
-     req.connection.remoteAddress || 
-     req.socket.remoteAddress ||
-     (req.connection.socket ? req.connection.socket.remoteAddress : null);
-  var regexp = /\(([^)]+)\)/;
-  var os = regexp.exec(req.headers['user-agent'])[1];
-  
-	res.send({
-		ipaddress: ip,
-		language: lang,
-		software: os
-	});
+const app = express();
+
+var GlobalNum, GlobalURL;
+
+// take in a url as a param
+// if invalid url 
+// {
+// error: "Wrong url format, make sure you have a valid protocol and real site."
+// }
+
+// if valid url
+// {
+// original_url: "https://www.google.com",
+// short_url: "https://little-url.herokuapp.com/3364"
+// }
+app.get('/' + GlobalNum, (req, res) => {
+	res.redirect(GlobalURL);
 });
 
-const port = process.env.PORT || 3000;
+app.get('/new/:url*', (req, res) => {
 
-app.listen(port, () => {
+	var url = req.params.url + req.params['0'];
+	var baseURL = req.headers.host;
+	var randomNum = Math.floor(1000 + Math.random() * 9000);
+	GlobalNum = randomNum;
+	GlobalURL = url;
+	console.log('global url', GlobalURL);
+	console.log('global num', GlobalNum);
+
+	if (validUrl.isUri(url)){
+	    res.send({
+	    	original_url: url,
+	    	short_url: baseURL + '/' + GlobalNum.toString()
+	    });
+	} else {
+	    res.send({
+			error: "Wrong url format, make sure you have a valid protocol and real site."
+		});
+	}
+});
+
+
+
+const port = process.env.PORT || 3001;
+
+app.listen(3001, () => {
 	console.log(`Server is up on port ${port}`);
 });
