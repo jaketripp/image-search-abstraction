@@ -31,6 +31,25 @@ app.get('/', (req, res) => {
 	res.render('index.html');
 });
 
+// checks some API and returns results
+// {
+	// url: "http://i0.kym-cdn.com/photos/images/newsfeed/000/024/741/lolcats-funny-picture-lalalalala.jpg",
+	// snippet: "Image - 24741] | LOLcats | Know Your Meme",
+	// thumbnail: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ3BtcPMrtcKSGJvxwpdTnKmIel1gq3EFU_papXNoGB8L0YZHJdQIN-jGb1",
+	// context: "http://knowyourmeme.com/photos/24741-lolcats"
+// }
+// offset shows the next result
+// no offset is 0-10
+// offset=1 is 1-11?
+
+// app.get('/api/imagesearch/:search?offset=:offset', (req, res) => {
+// 	console.log(req);
+// });
+
+// show 9 most recent searchs from database
+// app.get('/api/latest/imagesearch', (req, res) => {
+
+// });
 // app.get('/:id', (req, res) => {
 
 // 	var id = req.params.id;
