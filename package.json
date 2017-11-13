@@ -17,11 +17,11 @@
   "devDependencies": {},
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jaketripp/request-header-parser.git"
+    "url": "git+https://github.com/jaketripp/image-search-abstraction.git"
   },
   "bugs": {
-    "url": "https://github.com/jaketripp/request-header-parser/issues"
+    "url": "https://github.com/jaketripp/image-search-abstraction/issues"
   },
-  "homepage": "https://github.com/jaketripp/request-header-parser#readme",
+  "homepage": "https://github.com/jaketripp/image-search-abstraction#readme",
   "description": ""
 }
