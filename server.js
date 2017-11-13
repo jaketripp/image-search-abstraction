@@ -13,19 +13,18 @@ app.use(express.static(__dirname + '/public'));
 
 app.use(bodyParser.json());
 
-// var URL = mongoose.model('URL', {
-// 	id: {
-// 		type: Number,
-// 		required: true,
-// 		minLength: 4,
-// 		trim: true
-// 	},
-// 	redirect: {
-// 		type: String,
-// 		required: true,
-// 		trim: true
-// 	}
-// });
+var Search = mongoose.model('Search', {
+	term: {
+		type: String,
+		required: true,
+		trim: true
+	},
+	when: {
+		type: String,
+		required: true,
+		trim: true
+	}
+});
 
 app.get('/', (req, res) => {
 	res.render('index.html');
@@ -42,14 +41,33 @@ app.get('/', (req, res) => {
 // no offset is 0-10
 // offset=1 is 1-11?
 
-// app.get('/api/imagesearch/:search?offset=:offset', (req, res) => {
-// 	console.log(req);
-// });
+app.get('/api/imagesearch/:search', (req, res) => {
+	var search = new Search({
+		term: req.params.search,
+		when: new Date().toISOString()
+	});
 
-// show 9 most recent searchs from database
-// app.get('/api/latest/imagesearch', (req, res) => {
+	search.save().then((doc) => {
+		res.send(doc);
+	}, (e) => {
+		res.status(400).send(e);
+	});
+});
 
-// });
+// done
+app.get('/api/latest/imagesearch', (req, res) => {
+	Search.find().sort({_id:-1}).limit(10).then((searches) => {
+		searches = searches.map((obj) => {
+			return {
+				term: obj.term,
+				when: obj.when
+		    };
+		});
+		console.log(searches);
+		res.send(searches);
+	});
+});
+
 // app.get('/:id', (req, res) => {
 
 // 	var id = req.params.id;
