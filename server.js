@@ -1,6 +1,7 @@
 const express = require('express');
 const validUrl = require('valid-url');
 const bodyParser = require('body-parser');
+const request = require('request');
 var mongoose = require('mongoose');
 
 mongoose.Promise = global.Promise;
@@ -30,32 +31,70 @@ app.get('/', (req, res) => {
 	res.render('index.html');
 });
 
-// checks some API and returns results
-// {
-	// url: "http://i0.kym-cdn.com/photos/images/newsfeed/000/024/741/lolcats-funny-picture-lalalalala.jpg",
-	// snippet: "Image - 24741] | LOLcats | Know Your Meme",
-	// thumbnail: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ3BtcPMrtcKSGJvxwpdTnKmIel1gq3EFU_papXNoGB8L0YZHJdQIN-jGb1",
-	// context: "http://knowyourmeme.com/photos/24741-lolcats"
-// }
-// offset shows the next result
-// no offset is 0-10
-// offset=1 is 1-11?
+// https://www.googleapis.com/customsearch/v1?key=AIzaSyB0aF-t4wNWmZVb_JknijOwTRo3QHKmFgQ&q=car&num=10&start=1&cx=012263939262880338054:rzultl19nes&hl=en&filter=1&searchType=image&alt=json
 
-app.get('/api/imagesearch/:search', (req, res) => {
+// AIzaSyB0aF-t4wNWmZVb_JknijOwTRo3QHKmFgQ
+// var searchTerms = 'car';
+// var offset = 1;
+// var url = `https://www.googleapis.com/customsearch/v1?
+// key=AIzaSyB0aF-t4wNWmZVb_JknijOwTRo3QHKmFgQ
+// &q=${searchTerms}
+// &num=10
+// &start=${offset}
+// &cx=012263939262880338054:rzultl19nes
+// &hl=en
+// &searchType=image
+// &alt=json`;
+
+// https://www.googleapis.com/customsearch/v1?key=AIzaSyB0aF-t4wNWmZVb_JknijOwTRo3QHKmFgQ&q=car&num=10&start=1&cx=012263939262880338054:rzultl19nes&hl=en&searchType=image
+ // q = search
+ // num = number of items
+ // start is the offset (1 means don't return the first one)
+ // cx = your id thing
+ // hl = language for results
+ // filter = remove duplicate content (1 for true)
+ // searchType = type = object
+ // 
+
+
+app.get('/imgsearch/:search', (req, res) => {
+
+	var startIndex = parseInt(req.query.offset) || 1;
+
 	var search = new Search({
 		term: req.params.search,
 		when: new Date().toISOString()
 	});
 
 	search.save().then((doc) => {
-		res.send(doc);
+		console.log(doc);
 	}, (e) => {
 		res.status(400).send(e);
 	});
+
+	request({
+		url: `https://www.googleapis.com/customsearch/v1?key=AIzaSyB0aF-t4wNWmZVb_JknijOwTRo3QHKmFgQ&cx=012263939262880338054:rzultl19nes&hl=en&searchType=image&q=${req.params.search}&num=10&start=${startIndex}`,
+		json: true
+	}, function(error, response, body) {
+
+		if (!error && response.statusCode === 200) {
+			var obj = body.items.map((item) => {
+				return {
+					url: item.link,
+					snippet: item.snippet,
+					thumbnail: item.image.thumbnailLink,
+					context: item.image.contextLink
+				};
+			});
+			res.send(obj);
+		} else {
+			console.log('Unable to fetch data.');
+		}
+
+	});
 });
 
-// done
-app.get('/api/latest/imagesearch', (req, res) => {
+app.get('/latest', (req, res) => {
 	Search.find().sort({_id:-1}).limit(10).then((searches) => {
 		searches = searches.map((obj) => {
 			return {
@@ -63,65 +102,9 @@ app.get('/api/latest/imagesearch', (req, res) => {
 				when: obj.when
 		    };
 		});
-		console.log(searches);
 		res.send(searches);
 	});
 });
-
-// app.get('/:id', (req, res) => {
-
-// 	var id = req.params.id;
-// 	// not a number
-// 	if (isNaN(id)) {
-// 		res.send({
-// 			error: "This is not a valid url."
-// 		});
-// 	}
-// 	id = Number(id);
-
-// 	URL.find({ id }).then((url) => {
-// 		// couldn't find anything
-// 		if (url.length === 0) {
-// 			res.send({
-// 				error: "This url is not in the database."
-// 			});
-// 		// success case
-// 		} else {
-// 			res.redirect(url[0].redirect);
-// 		}
-
-// 	}).catch((e) => {
-// 		res.status(400).send();
-// 	});
-// });
-
-// app.get('/new/:url*', (req, res) => {
-// 	var randomNum = Math.floor(1000 + Math.random() * 9000);
-// 	var url = req.params.url + req.params['0'];
-// 	var baseURL = req.headers.host;
-
-// 	var site = new URL({
-// 		redirect: url,
-// 		id: randomNum
-// 	});
-
-// 	if (validUrl.isUri(url)) {
-// 		site.save().then((doc) => {
-// 			res.send({
-// 				original_url: doc.redirect,
-// 				short_url: 'http://' + baseURL + '/' + doc.id
-// 			});
-// 		}, (e) => {
-// 			res.status(400).send(e);
-// 		});
-
-// 	} else {
-// 		res.send({
-// 			error: "Wrong url format, make sure you have a valid protocol and real site."
-// 		});
-// 	}
-
-// });
 
 const port = process.env.PORT || 3000;
 
