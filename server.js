@@ -1,5 +1,4 @@
 const express = require('express');
-const validUrl = require('valid-url');
 const bodyParser = require('body-parser');
 const request = require('request');
 var mongoose = require('mongoose');
@@ -31,36 +30,12 @@ app.get('/', (req, res) => {
 	res.render('index.html');
 });
 
-// https://www.googleapis.com/customsearch/v1?key=AIzaSyB0aF-t4wNWmZVb_JknijOwTRo3QHKmFgQ&q=car&num=10&start=1&cx=012263939262880338054:rzultl19nes&hl=en&filter=1&searchType=image&alt=json
-
-// AIzaSyB0aF-t4wNWmZVb_JknijOwTRo3QHKmFgQ
-// var searchTerms = 'car';
-// var offset = 1;
-// var url = `https://www.googleapis.com/customsearch/v1?
-// key=AIzaSyB0aF-t4wNWmZVb_JknijOwTRo3QHKmFgQ
-// &q=${searchTerms}
-// &num=10
-// &start=${offset}
-// &cx=012263939262880338054:rzultl19nes
-// &hl=en
-// &searchType=image
-// &alt=json`;
-
-// https://www.googleapis.com/customsearch/v1?key=AIzaSyB0aF-t4wNWmZVb_JknijOwTRo3QHKmFgQ&q=car&num=10&start=1&cx=012263939262880338054:rzultl19nes&hl=en&searchType=image
- // q = search
- // num = number of items
- // start is the offset (1 means don't return the first one)
- // cx = your id thing
- // hl = language for results
- // filter = remove duplicate content (1 for true)
- // searchType = type = object
- // 
-
-
 app.get('/imgsearch/:search', (req, res) => {
 
 	var startIndex = parseInt(req.query.offset) || 1;
-
+  var cx = process.env.CX;
+  var key = process.env.APIKEY;
+  
 	var search = new Search({
 		term: req.params.search,
 		when: new Date().toISOString()
@@ -73,7 +48,7 @@ app.get('/imgsearch/:search', (req, res) => {
 	});
 
 	request({
-		url: `https://www.googleapis.com/customsearch/v1?key=AIzaSyB0aF-t4wNWmZVb_JknijOwTRo3QHKmFgQ&cx=012263939262880338054:rzultl19nes&hl=en&searchType=image&q=${req.params.search}&num=10&start=${startIndex}`,
+		url: `https://www.googleapis.com/customsearch/v1?key=${key}&cx=${cx}&hl=en&searchType=image&q=${req.params.search}&num=10&start=${startIndex}`,
 		json: true
 	}, function(error, response, body) {
 
@@ -111,4 +86,3 @@ const port = process.env.PORT || 3000;
 app.listen(3000, () => {
 	console.log(`Server is up on port ${port}`);
 });
-
